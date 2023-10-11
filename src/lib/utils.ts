@@ -59,7 +59,7 @@ export const getFoodType = (foodToFind: string) => {
     for (const category in food) {
       if (
         Array.isArray(food[category]) &&
-        food[category]?.includes(foodToFind)
+        (food[category] as string[]).includes(foodToFind)
       ) {
         return category;
       }
@@ -174,7 +174,10 @@ export const getFoodEffects = (felyneNum: string, selectedFoods: string[]) => {
 
   for (const food of selectedFoods) {
     for (const key in foodsRaw) {
-      if (Array.isArray(foodsRaw[key]) && foodsRaw[key].includes(food)) {
+      if (
+        Array.isArray(foodsRaw[key]) &&
+        (foodsRaw[key] as string[]).includes(food)
+      ) {
         selectedFoodsGrouped[key] = selectedFoodsGrouped[key] || [];
         selectedFoodsGrouped[key].push(food);
       }
