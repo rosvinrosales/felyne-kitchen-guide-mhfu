@@ -194,30 +194,7 @@ export const getFoodEffects = (felyneNum: string, selectedFoods: string[]) => {
     }
   });
 
-  // if (Object.keys(selectedFoodsGrouped).length > 1) {
-  //   console.log(
-  //     getCombinations(
-  //       "Meat",
-  //       "Meat",
-  //       selectedFoodsGrouped,
-  //       "+10 Health",
-  //       "good effect"
-  //     ),
-  //     "getCombinations Meat + Meat"
-  //   );
-  //   console.log(
-  //     getCombinations(
-  //       "Meat",
-  //       "Bran",
-  //       selectedFoodsGrouped,
-  //       "+10 Health",
-  //       "good effect"
-  //     ),
-  //     "getCombinations Meat + Bran"
-  //   );
-  // }
-
-  if (Object.keys(selectedFoodsGrouped).length > 1) {
+  if (Object.keys(selectedFoodsGrouped).length > 0) {
     if (felyneNum === "1") {
       if (countMap["Meat"] >= 2) {
         effects.push(
