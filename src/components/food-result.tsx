@@ -1,4 +1,3 @@
-import { CardHeader } from "@/components/ui/card";
 import { getFoodEffects } from "@/lib/utils";
 
 type FoodResultProps = {
@@ -11,20 +10,33 @@ export const FoodResult = ({
   currentFelyne,
 }: FoodResultProps) => {
   const foodEffects = getFoodEffects(currentFelyne, selectedFoods);
-  console.log(foodEffects, "foodEffects");
-  // console.log(selectedFoods, "selectedFoods");
-  // console.log(currentFelyne, "currentFelyne");
 
   return (
     <div className="rounded-lg border p-2">
-      <div className="flex flex-wrap flex-col gap-[5px]">
-        {Array.from({ length: 15 }, (_, index) => (
-          <div className="rounded-lg border " key={index}>
-            <CardHeader className="px-[15px] py-2.5">
-              Sample {index + 1}
-            </CardHeader>
+      <div className="flex flex-wrap flex-col gap-[8px]">
+        {foodEffects.length > 0 ? (
+          foodEffects.map(({ foodCombo, effect, effectStatus }) => (
+            <div
+              className={`rounded-lg border hover:shadow-md hover:cursor-pointer dark:hover:shadow-gray-800 `}
+              key={foodCombo}
+            >
+              <div
+                className={`px-[15px] py-2.5 text-sm ${
+                  effectStatus === "good effect"
+                    ? "text-green-600"
+                    : effectStatus === "bad effect" && "text-red-600"
+                }`}
+              >
+                <span className="block">({foodCombo})</span>
+                {effect}
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="rounded-lg border hover:shadow-md hover:cursor-pointer dark:hover:shadow-gray-800">
+            <div className="px-[15px] py-2.5 text-sm">Empty</div>
           </div>
-        ))}
+        )}
       </div>
     </div>
   );

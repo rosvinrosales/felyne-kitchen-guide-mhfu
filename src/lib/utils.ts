@@ -131,9 +131,61 @@ export const getFoodsRaw = (felyneNum: string) => {
   return felyneFood;
 };
 
+export const getCombinations = (
+  type1: string,
+  type2: string,
+  selectedFoodsGrouped: { [key: string]: string[] },
+  effect: string,
+  effectStatus: "good effect" | "bad effect" | "no effect"
+) => {
+  const combinations: {
+    foodCombo: string;
+    effect: string;
+    effectStatus: "good effect" | "bad effect" | "no effect";
+  }[] = [];
+
+  for (const food1 of selectedFoodsGrouped[type1]) {
+    for (const food2 of selectedFoodsGrouped[type2]) {
+      const combination = `${food2} + ${food1}`;
+      const reverseCombination = `${food1} + ${food2}`;
+
+      if (
+        combination !== reverseCombination &&
+        !combinations.some((c) => c.foodCombo === combination) &&
+        !combinations.some((c) => c.foodCombo === reverseCombination)
+      ) {
+        combinations.push({
+          foodCombo: combination,
+          effect: effect,
+          effectStatus: effectStatus,
+        });
+      }
+    }
+  }
+
+  return combinations;
+};
+
 export const getFoodEffects = (felyneNum: string, selectedFoods: string[]) => {
   const foodTypes = selectedFoods.map((food) => getFoodType(food));
-  const effects: string[] = [];
+  const foodsRaw: { [key: string]: number | string[] } | undefined =
+    getFoodsRaw(felyneNum);
+  const selectedFoodsGrouped: { [key: string]: string[] } = {};
+
+  for (const food of selectedFoods) {
+    for (const key in foodsRaw) {
+      if (Array.isArray(foodsRaw[key]) && foodsRaw[key].includes(food)) {
+        selectedFoodsGrouped[key] = selectedFoodsGrouped[key] || [];
+        selectedFoodsGrouped[key].push(food);
+      }
+    }
+  }
+
+  const effects: {
+    foodCombo: string;
+    effect: string;
+    effectStatus: "good effect" | "bad effect" | "no effect";
+  }[] = [];
   const countMap: { [item: string]: number } = {};
 
   foodTypes.forEach((item) => {
@@ -142,457 +194,1591 @@ export const getFoodEffects = (felyneNum: string, selectedFoods: string[]) => {
     }
   });
 
-  if (felyneNum === "1") {
-    if (countMap["Meat"] >= 2) {
-      effects.push("Meat + Meat = +10 Health");
+  // if (Object.keys(selectedFoodsGrouped).length > 1) {
+  //   console.log(
+  //     getCombinations(
+  //       "Meat",
+  //       "Meat",
+  //       selectedFoodsGrouped,
+  //       "+10 Health",
+  //       "good effect"
+  //     ),
+  //     "getCombinations Meat + Meat"
+  //   );
+  //   console.log(
+  //     getCombinations(
+  //       "Meat",
+  //       "Bran",
+  //       selectedFoodsGrouped,
+  //       "+10 Health",
+  //       "good effect"
+  //     ),
+  //     "getCombinations Meat + Bran"
+  //   );
+  // }
+
+  if (Object.keys(selectedFoodsGrouped).length > 1) {
+    if (felyneNum === "1") {
+      if (countMap["Meat"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Meat",
+            selectedFoodsGrouped,
+            "+10 Health",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Bran"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Bran",
+            selectedFoodsGrouped,
+            "+10 Health",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Fish"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Fish",
+            selectedFoodsGrouped,
+            "-25 Stamina",
+            "bad effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Fruit"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Fruit",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Veggie"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Veggie",
+            selectedFoodsGrouped,
+            "+25 Stamina",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Dairy",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Drink",
+            selectedFoodsGrouped,
+            "Attack Up Small",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Bran",
+            selectedFoodsGrouped,
+            "+25 Stamina",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Fish"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Fish",
+            selectedFoodsGrouped,
+            "+10 Health",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Fruit"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Fruit",
+            selectedFoodsGrouped,
+            "Ice Res +3",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Veggie"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Veggie",
+            selectedFoodsGrouped,
+            "-25 Stamina",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Dairy",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Drink",
+            selectedFoodsGrouped,
+            "-25 Stamina",
+            "bad effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Fish",
+            selectedFoodsGrouped,
+            "Attack Up Small",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 1 && countMap["Fruit"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Fruit",
+            selectedFoodsGrouped,
+            "-10 Health",
+            "bad effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 1 && countMap["Veggie"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Veggie",
+            selectedFoodsGrouped,
+            "+25 Stamina",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Dairy",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Drink",
+            selectedFoodsGrouped,
+            "+10 Defense",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fruit"] >= 1 && countMap["Veggie"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fruit",
+            "Veggie",
+            selectedFoodsGrouped,
+            "+20 Health",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fruit"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fruit",
+            "Dairy",
+            selectedFoodsGrouped,
+            "+25 Stamina",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fruit"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fruit",
+            "Drink",
+            selectedFoodsGrouped,
+            "-10 Health",
+            "bad effect"
+          )
+        );
+      }
+
+      if (countMap["Veggie"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Veggie",
+            "Veggie",
+            selectedFoodsGrouped,
+            "+10 Defense",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Veggie"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Veggie",
+            "Dairy",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Veggie"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Veggie",
+            "Drink",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Dairy"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Dairy",
+            "Dairy",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Dairy"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Dairy",
+            "Drink",
+            selectedFoodsGrouped,
+            "-10 Health",
+            "bad effect"
+          )
+        );
+      }
+    } else if (felyneNum === "2") {
+      if (countMap["Meat"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Meat",
+            selectedFoodsGrouped,
+            "+20 Health",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Bran"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Bran",
+            selectedFoodsGrouped,
+            "+15 Defense",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Fish"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Fish",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Fruit"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Fruit",
+            selectedFoodsGrouped,
+            "Fire Res +3",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Veggie"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Veggie",
+            selectedFoodsGrouped,
+            "-25 Stamina",
+            "bad effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Dairy",
+            selectedFoodsGrouped,
+            "-20 Health",
+            "bad effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Drink",
+            selectedFoodsGrouped,
+            "+10 Health",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Bran",
+            selectedFoodsGrouped,
+            "+25 Stamina",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Fish"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Fish",
+            selectedFoodsGrouped,
+            "+20 Health",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Fruit"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Fruit",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Veggie"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Veggie",
+            selectedFoodsGrouped,
+            "Attack Up Small",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Dairy",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Drink",
+            selectedFoodsGrouped,
+            "+10 Health & Thndr Res +3",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Fish",
+            selectedFoodsGrouped,
+            "Attack Up Small",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 1 && countMap["Fruit"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Fruit",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 1 && countMap["Veggie"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Veggie",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Dairy",
+            selectedFoodsGrouped,
+            "-25 Stamina",
+            "bad effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Drink",
+            selectedFoodsGrouped,
+            "+25 Stamina",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fruit"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Fruit",
+            "Fruit",
+            selectedFoodsGrouped,
+            "-20 Health",
+            "bad effect"
+          )
+        );
+      }
+
+      if (countMap["Fruit"] >= 1 && countMap["Veggie"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fruit",
+            "Veggie",
+            selectedFoodsGrouped,
+            "+10 Defense & +10 Health",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fruit"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fruit",
+            "Dairy",
+            selectedFoodsGrouped,
+            "Water Res +3",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fruit"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fruit",
+            "Drink",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Veggie"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Veggie",
+            "Veggie",
+            selectedFoodsGrouped,
+            "+10 Defense",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Veggie"] >= 1 && countMap["Milk"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Veggie",
+            "Milk",
+            selectedFoodsGrouped,
+            "-10 Health & -25 Stamina",
+            "bad effect"
+          )
+        );
+      }
+
+      if (countMap["Veggie"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Veggie",
+            "Drink",
+            selectedFoodsGrouped,
+            "+25 Stamina",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Dairy"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Dairy",
+            "Dairy",
+            selectedFoodsGrouped,
+            "+25 Stamina & Attack Up Small",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Dairy"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Dairy",
+            "Drink",
+            selectedFoodsGrouped,
+            "Ice Res +3",
+            "good effect"
+          )
+        );
+      }
+    } else if (felyneNum === "3") {
+      if (countMap["Meat"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Meat",
+            selectedFoodsGrouped,
+            "+20 Health",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Bran"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Bran",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Fish"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Fish",
+            selectedFoodsGrouped,
+            "Thunder Res +3",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Fruit"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Fruit",
+            selectedFoodsGrouped,
+            "Attack Up Large",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Veggie"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Veggie",
+            selectedFoodsGrouped,
+            "+10 Health & Attack Up Small",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Dairy",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Drink",
+            selectedFoodsGrouped,
+            "-25 Stamina",
+            "bad effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Bran",
+            selectedFoodsGrouped,
+            "+25 Stamina",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Fish"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Fish",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Fruit"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Fruit",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Veggie"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Veggie",
+            selectedFoodsGrouped,
+            "+50 Stamina",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Dairy",
+            selectedFoodsGrouped,
+            "+10 Defense & Stamina +25",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Drink",
+            selectedFoodsGrouped,
+            "+15 Defense & Water Res +3",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Fish",
+            selectedFoodsGrouped,
+            "Attack Up Small",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 1 && countMap["Fruit"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Fruit",
+            selectedFoodsGrouped,
+            "+25 Stamina & Fire Res +3",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 1 && countMap["Veggie"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Veggie",
+            selectedFoodsGrouped,
+            "-30 Health",
+            "bad effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Dairy",
+            selectedFoodsGrouped,
+            "+30 Health",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Drink",
+            selectedFoodsGrouped,
+            "-25 Stamina",
+            "bad effect"
+          )
+        );
+      }
+
+      if (countMap["Fruit"] >= 1 && countMap["Veggie"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fruit",
+            "Veggie",
+            selectedFoodsGrouped,
+            "-30 Health",
+            "bad effect"
+          )
+        );
+      }
+
+      if (countMap["Fruit"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fruit",
+            "Dairy",
+            selectedFoodsGrouped,
+            "-20 Health & -25 Stamina",
+            "bad effect"
+          )
+        );
+      }
+
+      if (countMap["Fruit"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fruit",
+            "Drink",
+            selectedFoodsGrouped,
+            "Attack Up Small",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Veggie"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Veggie",
+            "Veggie",
+            selectedFoodsGrouped,
+            "+10 Defense",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Veggie"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Veggie",
+            "Dairy",
+            selectedFoodsGrouped,
+            "+10 Health & +15 Defense",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Veggie"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Veggie",
+            "Drink",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Dairy"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Dairy",
+            "Dairy",
+            selectedFoodsGrouped,
+            "+20 Health & Ice Res +3",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Dairy"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Dairy",
+            "Drink",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+    } else if (felyneNum === "4") {
+      if (countMap["Meat"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Meat",
+            selectedFoodsGrouped,
+            "+30 Health",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Bran"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Bran",
+            selectedFoodsGrouped,
+            "-50 Stamina",
+            "bad effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Fish"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Fish",
+            selectedFoodsGrouped,
+            "+25 Stamina & Water Res +5",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Fruit"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Fruit",
+            selectedFoodsGrouped,
+            "Attack Up Small & Fire Res +5",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Veggie"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Veggie",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Dairy",
+            selectedFoodsGrouped,
+            "+40 Health",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Drink",
+            selectedFoodsGrouped,
+            "+10 Defense & Ice Res +5",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Bran",
+            selectedFoodsGrouped,
+            "+50 Stamina",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Fish"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Fish",
+            selectedFoodsGrouped,
+            "-30 Health & -25 Stamina",
+            "bad effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Fruit"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Fruit",
+            selectedFoodsGrouped,
+            "-40 Health",
+            "bad effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Veggie"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Veggie",
+            selectedFoodsGrouped,
+            "Attack Up Small & +25 Stamina",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Dairy",
+            selectedFoodsGrouped,
+            "+30 Health & Attack Up Small",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Drink",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Fish",
+            selectedFoodsGrouped,
+            "Attack Up Large",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 1 && countMap["Fruit"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Fruit",
+            selectedFoodsGrouped,
+            "+20 Defense",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 1 && countMap["Veggie"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Veggie",
+            selectedFoodsGrouped,
+            "+20 Health & Dragon Res +3",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Dairy",
+            selectedFoodsGrouped,
+            "+10 Defense & Thndr Res +3",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Drink",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Fruit"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Fruit",
+            "Fruit",
+            selectedFoodsGrouped,
+            "Attack Up Large & +10 Health",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fruit"] >= 1 && countMap["Veggie"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fruit",
+            "Veggie",
+            selectedFoodsGrouped,
+            "+50 Stamina",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fruit"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fruit",
+            "Dairy",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Fruit"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fruit",
+            "Drink",
+            selectedFoodsGrouped,
+            "+20 Health & +15 Defense",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Veggie"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Veggie",
+            "Veggie",
+            selectedFoodsGrouped,
+            "+15 Defense",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Veggie"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Veggie",
+            "Dairy",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Veggie"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Veggie",
+            "Drink",
+            selectedFoodsGrouped,
+            "+40 Health",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Dairy"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Dairy",
+            "Drink",
+            selectedFoodsGrouped,
+            "+20 Health & +25 Stamina",
+            "good effect"
+          )
+        );
+      }
+    } else if (felyneNum === "5") {
+      if (countMap["Meat"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Meat",
+            selectedFoodsGrouped,
+            "+30 Health",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Bran"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Bran",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Fish"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Fish",
+            selectedFoodsGrouped,
+            "+20 Health & +50 Stamina",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Fruit"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Fruit",
+            selectedFoodsGrouped,
+            "-40 Health & -25 Stamina",
+            "bad effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Veggie"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Veggie",
+            selectedFoodsGrouped,
+            "+40 Health & Attack Up Large",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Dairy",
+            selectedFoodsGrouped,
+            "+25 Stamina & +15 Defense",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Meat"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Meat",
+            "Drink",
+            selectedFoodsGrouped,
+            "Attack Up Small & Fire Res +5",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Bran",
+            selectedFoodsGrouped,
+            "+50 Stamina",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Fish"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Fish",
+            selectedFoodsGrouped,
+            "+40 Health & +20 Defense",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Fruit"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Fruit",
+            selectedFoodsGrouped,
+            "+30 Health & +25 Stamina",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Veggie"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Veggie",
+            selectedFoodsGrouped,
+            "Attack Up Small & +25 Stamina",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Dairy",
+            selectedFoodsGrouped,
+            "-50 Health",
+            "bad effect"
+          )
+        );
+      }
+
+      if (countMap["Bran"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Bran",
+            "Drink",
+            selectedFoodsGrouped,
+            "+20 Health & Water Res +5",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Fish",
+            selectedFoodsGrouped,
+            "Attack Up Large",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 1 && countMap["Fruit"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Fruit",
+            selectedFoodsGrouped,
+            "+50 Stamina & +10 Defense",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 1 && countMap["Veggie"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Veggie",
+            selectedFoodsGrouped,
+            "+10 Defense & Ice Res +5",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Dairy",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Fish"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fish",
+            "Drink",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Fruit"] >= 1 && countMap["Veggie"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fruit",
+            "Veggie",
+            selectedFoodsGrouped,
+            "No Effect",
+            "no effect"
+          )
+        );
+      }
+
+      if (countMap["Fruit"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fruit",
+            "Dairy",
+            selectedFoodsGrouped,
+            "+50 Health & Dragon Res +5",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Fruit"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Fruit",
+            "Drink",
+            selectedFoodsGrouped,
+            "Attack Up Small & Thndr Res +5",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Veggie"] >= 2) {
+        effects.push(
+          ...getCombinations(
+            "Veggie",
+            "Veggie",
+            selectedFoodsGrouped,
+            "+15 Defense",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Veggie"] >= 1 && countMap["Dairy"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Veggie",
+            "Dairy",
+            selectedFoodsGrouped,
+            "+25 Stamina & +20 Defense",
+            "good effect"
+          )
+        );
+      }
+
+      if (countMap["Veggie"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Veggie",
+            "Drink",
+            selectedFoodsGrouped,
+            "-50 Stamina",
+            "bad effect"
+          )
+        );
+      }
+
+      if (countMap["Dairy"] >= 1 && countMap["Drink"] >= 1) {
+        effects.push(
+          ...getCombinations(
+            "Dairy",
+            "Drink",
+            selectedFoodsGrouped,
+            "+50 Health & +50 Stamina",
+            "good effect"
+          )
+        );
+      }
     }
-
-    if (countMap["Meat"] >= 1 && countMap["Bran"] >= 1) {
-      effects.push("Meat + Bran = +10 Health");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Fish"] >= 1) {
-      effects.push("Meat + Fish = -25 Stamina");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Fruit"] >= 1) {
-      effects.push("Meat + Fruit = No Effect");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Veggie"] >= 1) {
-      effects.push("Meat + Veggie = +25 Stamina");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Dairy"] >= 1) {
-      effects.push("Meat + Dairy = No Effect");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Meat + Drink = Attack Up Small");
-    }
-
-    if (countMap["Bran"] >= 2) {
-      effects.push("Bran + Bran = +25 Stamina");
-    }
-
-    if (countMap["Bran"] >= 1 && countMap["Fish"] >= 1) {
-      effects.push("Bran + Fish = +10 Health");
-    }
-
-    if (countMap["Bran"] >= 1 && countMap["Fruit"] >= 1) {
-      effects.push("Bran + Fruit = Ice Res +3");
-    }
-
-    if (countMap["Bran"] >= 1 && countMap["Veggie"] >= 1) {
-      effects.push("Bran + Veggie = -25 Stamina");
-    }
-
-    if (countMap["Bran"] >= 1 && countMap["Dairy"] >= 1) {
-      effects.push("Bran + Dairy = No Effect");
-    }
-
-    if (countMap["Bran"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Bran + Drink = -25 Stamina");
-    }
-
-    if (countMap["Fish"] >= 2) {
-      effects.push("Fish + Fish = Attack Up Small");
-    }
-
-    if (countMap["Fish"] >= 1 && countMap["Fruit"] >= 1) {
-      effects.push("Fish + Fruit = -10 Health");
-    }
-
-    if (countMap["Fish"] >= 1 && countMap["Veggie"] >= 1) {
-      effects.push("Fish + Veggie = +25 Stamina");
-    }
-
-    if (countMap["Fish"] >= 1 && countMap["Dairy"] >= 1) {
-      effects.push("Fish + Dairy = No Effect");
-    }
-
-    if (countMap["Fish"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Fish + Drink = +10 Defense");
-    }
-
-    if (countMap["Fruit"] >= 1 && countMap["Veggie"] >= 1) {
-      effects.push("Fruit + Veggie = +20 Health");
-    }
-
-    if (countMap["Fruit"] >= 1 && countMap["Dairy"] >= 1) {
-      effects.push("Fruit + Dairy = +25 Stamina");
-    }
-
-    if (countMap["Fruit"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Fruit + Drink = -10 Health");
-    }
-
-    if (countMap["Veggie"] >= 2) {
-      effects.push("Veggie + Veggie = +10 Defense");
-    }
-
-    if (countMap["Veggie"] >= 1 && countMap["Dairy"] >= 1) {
-      effects.push("Veggie + Dairy = No Effect");
-    }
-
-    if (countMap["Veggie"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Veggie + Drink = No Effect");
-    }
-
-    if (countMap["Dairy"] >= 2) {
-      effects.push("Dairy + Dairy = No Effect");
-    }
-
-    if (countMap["Dairy"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Dairy + Drink = -10 Health");
-    }
-  } else if (felyneNum === "2") {
-    if (countMap["Meat"] >= 2) {
-      effects.push("Meat + Meat = +20 Health");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Bran"] >= 1) {
-      effects.push("Meat + Bran = +15 Defense");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Fish"] >= 1) {
-      effects.push("Meat + Fish = No Effect");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Fruit"] >= 1) {
-      effects.push("Meat + Fruit = Fire Res +3");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Veggie"] >= 1) {
-      effects.push("Meat + Veggie = -25 Stamina");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Dairy"] >= 1) {
-      effects.push("Meat + Dairy + -20 Health");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Meat + Drink = +10 Health");
-    }
-
-    if (countMap["Bran"] >= 2) {
-      effects.push("Bran + Bran = +25 Stamina");
-    }
-
-    if (countMap["Bran"] >= 1 && countMap["Fish"] >= 1) {
-      effects.push("Bran + Fish = +20 Health");
-    }
-
-    if (countMap["Bran"] >= 1 && countMap["Fruit"] >= 1) {
-      effects.push("Bran + Fruit = No Effect");
-    }
-
-    if (countMap["Bran"] >= 1 && countMap["Veggie"] >= 1) {
-      effects.push("Bran + Veggie = Attack Up Small");
-    }
-
-    if (countMap["Bran"] >= 1 && countMap["Dairy"] >= 1) {
-      effects.push("Bran + Dairy = No Effect");
-    }
-
-    if (countMap["Bran"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Bran + Drink = +10 Health & Thndr Res +3");
-    }
-
-    if (countMap["Fish"] >= 2) {
-      effects.push("Fish + Fish = Attack Up Small");
-    }
-
-    if (countMap["Fish"] >= 1 && countMap["Fruit"] >= 1) {
-      effects.push("Fish + Fruit = No Effect");
-    }
-
-    if (countMap["Fish"] >= 1 && countMap["Veggie"] >= 1) {
-      effects.push("Fish + Veggie = No Effect");
-    }
-
-    if (countMap["Fish"] >= 1 && countMap["Dairy"] >= 1) {
-      effects.push("Fish + Dairy = -25 Stamina");
-    }
-
-    if (countMap["Fish"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Fish + Drink = +25 Stamina");
-    }
-
-    if (countMap["Fruit"] >= 2) {
-      effects.push("Fruit + Fruit = -20 Health");
-    }
-
-    if (countMap["Fruit"] >= 1 && countMap["Veggie"] >= 1) {
-      effects.push("Fruit + Veggie = +10 Defense & +10 Health");
-    }
-
-    if (countMap["Fruit"] >= 1 && countMap["Dairy"] >= 1) {
-      effects.push("Fruit + Dairy = Water Res +3");
-    }
-
-    if (countMap["Fruit"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Fruit + Drink = No Effect");
-    }
-
-    if (countMap["Veggie"] >= 2) {
-      effects.push("Veggie + Veggie = +10 Defense");
-    }
-
-    if (countMap["Veggie"] >= 1 && countMap["Milk"] >= 1) {
-      effects.push("Veggie + Milk = -10 Health & -25 Stamina");
-    }
-
-    if (countMap["Veggie"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Veggie + Drink = +25 Stamina");
-    }
-
-    if (countMap["Dairy"] >= 2) {
-      effects.push("Dairy + Dairy = +25 Stamina & Attack Up Small");
-    }
-
-    if (countMap["Dairy"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Dairy + Drink = Ice Res +3");
-    }
-  } else if (felyneNum === "3") {
-    if (countMap["Meat"] >= 2) {
-      effects.push("Meat + Meat = +20 Health");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Bran"] >= 1) {
-      effects.push("Meat + Bran = No Effect");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Fish"] >= 1) {
-      effects.push("Meat + Fish = Thunder Res +3");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Fruit"] >= 1) {
-      effects.push("Meat + Fruit = Attack Up Large");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Veggie"] >= 1) {
-      effects.push("Meat + Veggie = +10 Health & Attack Up Small");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Dairy"] >= 1) {
-      effects.push("Meat + Dairy = No Effect");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Meat + Drink = -25 Stamina");
-    }
-
-    if (countMap["Bran"] >= 2) {
-      effects.push("Bran + Bran = +25 Stamina");
-    }
-
-    if (countMap["Bran"] >= 1 && countMap["Fish"] >= 1) {
-      effects.push("Bran + Fish = No Effect");
-    }
-
-    if (countMap["Bran"] >= 1 && countMap["Fruit"] >= 1) {
-      effects.push("Bran + Fruit = No Effect");
-    }
-
-    if (countMap["Bran"] >= 1 && countMap["Veggie"] >= 1) {
-      effects.push("Bran + Veggie = +50 Stamina");
-    }
-
-    if (countMap["Bran"] >= 1 && countMap["Dairy"] >= 1) {
-      effects.push("Bran + Dairy = +10 Defense & Stamina +25");
-    }
-
-    if (countMap["Bran"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Bran + Drink = +15 Defense & Water Res +3");
-    }
-
-    if (countMap["Fish"] >= 2) {
-      effects.push("Fish + Fish = Attack Up Small");
-    }
-
-    if (countMap["Fish"] >= 1 && countMap["Fruit"] >= 1) {
-      effects.push("Fish + Fruit = +25 Stamina & Fire Res +3");
-    }
-
-    if (countMap["Fish"] >= 1 && countMap["Veggie"] >= 1) {
-      effects.push("Fish + Veggie = -30 Health");
-    }
-
-    if (countMap["Fish"] >= 1 && countMap["Dairy"] >= 1) {
-      effects.push("Fish + Dairy = +30 Health");
-    }
-
-    if (countMap["Fish"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Fish + Drink = -25 Stamina");
-    }
-
-    if (countMap["Fruit"] >= 1 && countMap["Veggie"] >= 1) {
-      effects.push("Fruit + Veggie = -30 Health");
-    }
-
-    if (countMap["Fruit"] >= 1 && countMap["Dairy"] >= 1) {
-      effects.push("Fruit + Dairy = -20 Health & -25 Stamina");
-    }
-
-    if (countMap["Fruit"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Fruit + Drink = Attack Up Small");
-    }
-
-    if (countMap["Veggie"] >= 2) {
-      effects.push("Veggie + Veggie = +10 Defense");
-    }
-
-    if (countMap["Veggie"] >= 1 && countMap["Dairy"] >= 1) {
-      effects.push("Veggie + Dairy = +10 Health & +15 Defense");
-    }
-
-    if (countMap["Veggie"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Veggie + Drink = No Effect");
-    }
-
-    if (countMap["Dairy"] >= 2) {
-      effects.push("Dairy + Dairy = +20 Health & Ice Res +3");
-    }
-
-    if (countMap["Dairy"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Dairy + Drink = No Effect");
-    }
-  } else if (felyneNum === "4") {
-    if (countMap["Meat"] >= 2) {
-      effects.push("Meat + Meat = +30 Health");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Bran"] >= 1) {
-      effects.push("Meat + Bran = -50 Stamina");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Fish"] >= 1) {
-      effects.push("Meat + Fish = +25 Stamina & Water Res +5");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Fruit"] >= 1) {
-      effects.push("Meat + Fruit = Attack Up Small & Fire Res +5");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Veggie"] >= 1) {
-      effects.push("Meat + Veggie = No Effect");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Dairy"] >= 1) {
-      effects.push("Meat + Dairy = +40 Health");
-    }
-
-    if (countMap["Meat"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Meat + Drink = +10 Defense & Ice Res +5");
-    }
-
-    if (countMap["Bran"] >= 2) {
-      effects.push("Bran + Bran = +50 Stamina");
-    }
-
-    if (countMap["Bran"] >= 1 && countMap["Fish"] >= 1) {
-      effects.push("Bran + Fish = -30 Health & -25 Stamina");
-    }
-
-    if (countMap["Bran"] >= 1 && countMap["Fruit"] >= 1) {
-      effects.push("Bran + Fruit = -40 Health");
-    }
-
-    if (countMap["Bran"] >= 1 && countMap["Veggie"] >= 1) {
-      effects.push("Bran + Veggie = Attack Up Small & +25 Stamina");
-    }
-
-    if (countMap["Bran"] >= 1 && countMap["Dairy"] >= 1) {
-      effects.push("Bran + Dairy = +30 Health & Attack Up Small");
-    }
-
-    if (countMap["Bran"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Bran + Drink = No Effect");
-    }
-
-    if (countMap["Fish"] >= 2) {
-      effects.push("Fish + Fish = Attack Up Large");
-    }
-
-    if (countMap["Fish"] >= 1 && countMap["Fruit"] >= 1) {
-      effects.push("Fish + Fruit = +20 Defense");
-    }
-
-    if (countMap["Fish"] >= 1 && countMap["Veggie"] >= 1) {
-      effects.push("Fish + Veggie = +20 Health & Dragon Res +3");
-    }
-
-    if (countMap["Fish"] >= 1 && countMap["Dairy"] >= 1) {
-      effects.push("Fish + Dairy = +10 Defense & Thndr Res +3");
-    }
-
-    if (countMap["Fish"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Fish + Drink = No Effect");
-    }
-
-    if (countMap["Fruit"] >= 2) {
-      effects.push("Fruit + Fruit = Attack Up Large & +10 Health");
-    }
-
-    if (countMap["Fruit"] >= 1 && countMap["Veggie"] >= 1) {
-      effects.push("Fruit + Veggie = +50 Stamina");
-    }
-
-    if (countMap["Fruit"] >= 1 && countMap["Dairy"] >= 1) {
-      effects.push("Fruit + Dairy = No Effect");
-    }
-
-    if (countMap["Fruit"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Fruit + Drink = +20 Health & +15 Defense");
-    }
-
-    if (countMap["Veggie"] >= 2) {
-      effects.push("Veggie + Veggie = +15 Defense");
-    }
-
-    if (countMap["Veggie"] >= 1 && countMap["Dairy"] >= 1) {
-      effects.push("Veggie + Dairy = No Effect");
-    }
-
-    if (countMap["Veggie"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Veggie + Drink = +40 Health");
-    }
-
-    if (countMap["Dairy"] >= 1 && countMap["Drink"] >= 1) {
-      effects.push("Dairy + Drink = +20 Health & +25 Stamina");
-    }
-  } else if (felyneNum === "5") {
-    if (countMap["Meat"] >= 2) {
-      effects.push("Meat + Meat = +30 Health");
-    }
-    /*
-      5 FELYNE
-      Meat + Bran = No Effect
-      Meat + Fish = +20 Health & +50 Stamina
-      Meat + Fruit= -40 Health & -25 Stamina
-      Meat + Veggie = +40 Health & Attack Up Large
-      Meat + Dairy = +25 Stamina & +15 Defense
-      Meat + Drink = Attack Up Small & Fire Res +5
-      Bran + Bran = +50 Stamina
-      Bran + Fish = +40 Health & +20 Defense
-      Bran + Fruit = +30 Health & +25 Stamina
-      Bran + Veggie = Attack Up Small & +25 Stamina
-      Bran + Dairy = -50 Health
-      Bran + Drink = +20 Health & Water Res +5
-      Fish + Fish = Attack Up Large
-      Fish + Fruit = +50 Stamina & +10 Defense
-      Fish + Veggie = +10 Defense & Ice Res +5
-      Fish + Dairy = No Effect
-      Fish + Drink = No Effect
-      Fruit + Veggie = No Effect
-      Fruit + Dairy = +50 Health & Dragon Res +5
-      Fruit + Drink = Attack Up Small & Thndr Res +5
-      Veggie + Veggie = +15 Defense
-      Veggie + Dairy = +25 Stamina & +20 Defense
-      Veggie + Drink = -50 Stamina
-      Dairy + Drink = +50 Health & +50 Stamina
-    */
   }
 
   return effects;

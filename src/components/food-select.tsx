@@ -26,6 +26,8 @@ export const FoodSelect = ({
   currentFoodsArray,
 }: FoodSelectProps) => {
   const resultArray = currentFoods ? convertFoodsToArray(currentFoods) : [];
+  const [inputValue, setInputValue] = React.useState("");
+  // let inputValue = "";
 
   React.useEffect(() => {
     setCurrentFoodsArray(resultArray);
@@ -37,12 +39,19 @@ export const FoodSelect = ({
       (food) => food.toUpperCase() !== value.toLocaleUpperCase()
     );
     setCurrentFoodsArray(tempArray);
+    setInputValue("");
   };
 
   return (
     <div className="rounded-lg border p-2">
       <Command>
-        <CommandInput placeholder="Search food..." />
+        <CommandInput
+          placeholder="Search food..."
+          value={inputValue}
+          onChangeCapture={(e) => {
+            setInputValue(e.currentTarget.value);
+          }}
+        />
         <CommandList className="max-h-[150px]">
           <CommandEmpty>No results found.</CommandEmpty>
           {currentFoodsArray.length > 0 ? (

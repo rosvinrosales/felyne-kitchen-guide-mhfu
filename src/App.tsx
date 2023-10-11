@@ -1,6 +1,5 @@
 import React from "react";
 import "./App.css";
-import { Button } from "@/components/ui/button";
 import { ModeToggle } from "./components/mode-toggle";
 import {
   Card,
@@ -69,10 +68,9 @@ const App = () => {
               selectedFoods={selectedFoods}
               currentFelyne={currentFelyne}
             />
-            <Button>huehue</Button>
           </CardContent>
           <CardFooter>
-            <p className="text-xs">
+            <div className="text-xs">
               <p>WHIM SKILLS LIST</p>
               <p>
                 Frugality = Stops Breakable items, such as Pickaxes and Bugnets
@@ -130,7 +128,7 @@ const App = () => {
               </p>
               <p>Ultra Lucky Cat = Chance of better rewards.</p>
               <p>Dismantle = Chance of an extra carve.</p>
-            </p>
+            </div>
           </CardFooter>
         </Card>
       </div>
