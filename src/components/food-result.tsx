@@ -53,13 +53,18 @@ export const FoodResult = ({
             htmlFor="group"
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            Group Duplicate Effects
+            Group Same Effects
           </label>
         </div>
         {foodEffects.length > 0 ? (
           foodEffects.map(({ foodCombo, effect, effectStatus }) => (
             <div
-              className={`rounded-lg border hover:shadow-md hover:cursor-pointer dark:hover:shadow-gray-800 `}
+              className={`rounded-lg border hover:shadow-md hover:cursor-pointer dark:hover:shadow-gray-800 ${
+                effectStatus === "good effect"
+                  ? "border-green-300 dark:border-green-900"
+                  : effectStatus === "bad effect" &&
+                    "border-red-300 dark:border-red-900"
+              }`}
               key={foodCombo}
             >
               <div
