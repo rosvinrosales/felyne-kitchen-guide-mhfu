@@ -1,27 +1,5 @@
-# React + TypeScript + Vite
+# Felyne Kitchen (MHFU)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This utility serves as a compact tool designed for use in the context of "Monster Hunter Freedom Unite" on the PlayStation Portable (PSP). Its primary function is to assist users in making informed choices when selecting food combinations within the game's "Felyne Kitchen." By doing so, it eliminates the need for guesswork and ensures that players achieve desired positive effects for their characters.
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+These food combinations can be readily accessed online, with one illustrative source being the following hyperlink: link to gamefaqs.gamespot.com/psp/943356-monster-hunter-freedom-unite/faqs/78652/kitchen.
