@@ -43,7 +43,7 @@ const App = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center px-10 py-20">
+      <div className="flex flex-col items-center px-3 py-5 md:py-20">
         <Card className="w-full max-w-2xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-5 justify-between">
