@@ -44,6 +44,7 @@ const App = () => {
   };
 
   const handleReset = () => {
+    setCurrentFoodsArray([]);
     setCurrentFoods(getFoodsRaw(currentFelyne));
     setSelectedFoods([]);
   };
