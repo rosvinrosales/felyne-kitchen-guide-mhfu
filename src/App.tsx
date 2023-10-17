@@ -14,6 +14,8 @@ import { FoodSelected } from "@/components/food-selected";
 import { FoodResult } from "@/components/food-result";
 import { getFoodsRaw, FoodsProps } from "@/lib/utils";
 import { Footer } from "./components/footer";
+import { Button } from "./components/ui/button";
+import { RotateCcw } from "lucide-react";
 
 const App = () => {
   const [currentFelyne, setCurrentFelyne] = React.useState<string>("");
@@ -39,6 +41,11 @@ const App = () => {
   const handleRemoveSelectedFood = (value: string) => {
     setSelectedFoods((prev) => prev.filter((food) => food !== value));
     setCurrentFoodsArray((prev) => [...prev, value]);
+  };
+
+  const handleReset = () => {
+    setCurrentFoods(getFoodsRaw(currentFelyne));
+    setSelectedFoods([]);
   };
 
   return (
@@ -68,6 +75,10 @@ const App = () => {
               selectedFoods={selectedFoods}
               currentFelyne={currentFelyne}
             />
+            <Button onClick={handleReset}>
+              <RotateCcw className="mr-2 h-4 w-4" />
+              Reset
+            </Button>
           </CardContent>
           <Footer />
         </Card>
