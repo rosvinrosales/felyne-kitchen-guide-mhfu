@@ -74,8 +74,8 @@ export const FoodResult = ({
                     : effectStatus === "bad effect" && "text-red-600"
                 }`}
               >
-                <span className="block">({foodCombo})</span>
-                {effect}
+                <span className="block capitalize">({foodCombo})</span>
+                <span className="font-bold text-lg">{effect}</span>
               </div>
             </div>
           ))
