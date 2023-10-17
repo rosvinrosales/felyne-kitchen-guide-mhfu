@@ -60,7 +60,9 @@ export const FoodSelected = ({
                 {/* {LucideIcons[getFoodType(food)]} */}
                 {/* <IconComponent className="mr-2 h-4 w-4" /> */}
                 {/* {getIcon(getFoodType(food))} */}
-                <span className="text-sm text-center !mt-0">{food}</span>
+                <span className="text-sm text-center !mt-0 text-muted-foreground">
+                  {food}
+                </span>
                 <X
                   className="w-4 h-4 text-gray-400 hover:text-gray-50 !mt-0 ml-4"
                   onClick={() => handleRemoveSelectedFood(food)}
