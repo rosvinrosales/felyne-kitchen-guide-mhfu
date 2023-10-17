@@ -21,6 +21,14 @@ export const FoodResult = ({
 
   const handleCheckGroupEffects = (e: string | boolean) => {
     setIsEffectsGrouped(e);
+    handleGroupFoodEffects(e);
+  };
+
+  const uniqueFoodCombos = foodEffectsTemp.filter((foodCombo, index, self) => {
+    return index === self.findIndex((f) => f.effect === foodCombo.effect);
+  });
+
+  const handleGroupFoodEffects = (e: boolean | string) => {
     if (e) {
       setFoodEffects(uniqueFoodCombos);
     } else {
@@ -28,16 +36,8 @@ export const FoodResult = ({
     }
   };
 
-  const uniqueFoodCombos = foodEffectsTemp.filter((foodCombo, index, self) => {
-    return index === self.findIndex((f) => f.effect === foodCombo.effect);
-  });
-
   React.useEffect(() => {
-    if (isEffectsGrouped) {
-      setFoodEffects(uniqueFoodCombos);
-    } else {
-      setFoodEffects(getFoodEffects(currentFelyne, selectedFoods));
-    }
+    handleGroupFoodEffects(isEffectsGrouped);
   }, [foodEffectsTemp.length]);
 
   return (

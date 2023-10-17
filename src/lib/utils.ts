@@ -1761,5 +1761,12 @@ export const getFoodEffects = (felyneNum: string, selectedFoods: string[]) => {
     }
   }
 
+  // sort by effect status
+  effects.sort((a, b) => {
+    const order = ["good effect", "no effect", "bad effect"];
+
+    return order.indexOf(a.effectStatus) - order.indexOf(b.effectStatus);
+  });
+
   return effects;
 };
