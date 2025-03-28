@@ -1,13 +1,4 @@
-import {
-  // Beef,
-  // Cherry,
-  // Fish,
-  // GlassWater,
-  // LeafyGreen,
-  // Milk,
-  // Wheat,
-  X,
-} from "lucide-react";
+import { X } from "lucide-react";
 
 // import * as LucideIcons from "lucide-react";
 
