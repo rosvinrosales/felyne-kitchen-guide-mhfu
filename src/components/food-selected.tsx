@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import { CardHeader } from "@/components/ui/card";
 // import { getFoodType } from "@/lib/utils";
-
+// TEst comment
 type FoodSelectedProps = {
   selectedFoods: string[];
   handleRemoveSelectedFood: (value: string) => void;
