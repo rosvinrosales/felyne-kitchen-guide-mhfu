@@ -1,7 +1,4 @@
 import { X } from "lucide-react";
-
-// import * as LucideIcons from "lucide-react";
-
 import { CardHeader } from "@/components/ui/card";
 // import { getFoodType } from "@/lib/utils";
 
