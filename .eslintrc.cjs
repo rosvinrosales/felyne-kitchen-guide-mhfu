@@ -15,4 +15,13 @@ module.exports = {
       { allowConstantExport: true },
     ],
   },
+  overrides: [
+    {
+      files: ['server.js'],
+      env: {
+        node: true,
+        browser: false,
+      },
+    },
+  ],
 }

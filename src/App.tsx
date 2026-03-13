@@ -16,6 +16,7 @@ import { getFoodsRaw, FoodsProps } from "@/lib/utils";
 import { Footer } from "./components/footer";
 import { Button } from "./components/ui/button";
 import { RotateCcw } from "lucide-react";
+import { ContactForm } from "./components/contact-form";
 
 const App = () => {
   const [currentFelyne, setCurrentFelyne] = React.useState<string>("");
@@ -81,6 +82,7 @@ const App = () => {
               Reset
             </Button>
           </CardContent>
+          <ContactForm />
           <Footer />
         </Card>
       </div>
