@@ -16,6 +16,7 @@ import { getFoodsRaw, FoodsProps } from "@/lib/utils";
 import { Footer } from "./components/footer";
 import { Button } from "./components/ui/button";
 import { RotateCcw } from "lucide-react";
+import { ContactForm } from "./components/contact-form";
 
 const App = () => {
   const [currentFelyne, setCurrentFelyne] = React.useState<string>("");
@@ -58,7 +59,7 @@ const App = () => {
               Felyne Kitchen Guide (MHFU)
               <ModeToggle />
             </CardTitle>
-            <CardDescription>-</CardDescription>
+            <CardDescription>Select the number of Felyne and the food choices to see the combinations and results. Click the reset button to clear the current selections.</CardDescription>
           </CardHeader>
           <CardContent className="gap-5 flex flex-col">
             <FelyneSelect onSelectFelyne={onSelectFelyne} />
@@ -82,6 +83,7 @@ const App = () => {
             </Button>
           </CardContent>
           <Footer />
+          <ContactForm />
         </Card>
       </div>
     </>

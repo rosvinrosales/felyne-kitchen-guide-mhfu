@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { CardFooter } from "@/components/ui/card";
 
 const text = {
@@ -87,24 +88,59 @@ const text = {
 };
 
 export const Footer = () => {
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    offensive: false,
+    defensive: false,
+    rewards: false,
+    other: false,
+  });
+
+  const toggleSection = (section: string) => {
+    setOpenSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
+
   return (
-    <CardFooter>
-      <div>
+    <CardFooter className="w-full">
+      <div className="w-full">
         <h2 className="font-semibold text-center mb-2">WHIM SKILLS LIST</h2>
-        <div>
-          {Object.entries(text).map(([key, value]) => (
-            <div className="rounded-lg border p-2 mb-2">
-              <h6 className="capitalize mb-3">{key}</h6>
-              <div className="pl-2">
-                {Object.entries(value).map(([key, value]) => (
-                  <div key={key} className="p-1 text-sm">
-                    <p>{key}</p>
-                    <p className="text-muted-foreground">{value}</p>
-                  </div>
-                ))}
+        <div className="w-full">
+          {Object.entries(text).map(([sectionKey, value]) => {
+            const isOpen = openSections[sectionKey] ?? false;
+
+            return (
+              <div key={sectionKey} className="w-full mb-2">
+                <button
+                  type="button"
+                  onClick={() => toggleSection(sectionKey)}
+                  className="flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left"
+                >
+                  <h6 className="capitalize font-medium">{sectionKey}</h6>
+                  <span className="ml-2 text-xs text-muted-foreground">
+                    {isOpen ? "Hide" : "Show"}
+                  </span>
+                </button>
+                <div
+                  className={`border border-t-0 rounded-b-lg px-3 overflow-hidden data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up ${
+                    isOpen ? "py-2" : "p-0 h-0"
+                  }`}
+                  data-state={isOpen ? "open" : "closed"}
+                >
+                  {isOpen &&
+                    Object.entries(value).map(
+                      ([skillKey, skillValue]: [string, string]) => (
+                        <div key={skillKey} className="py-1 text-sm">
+                          <p>{skillKey}</p>
+                          <p className="text-muted-foreground">{skillValue}</p>
+                        </div>
+                      )
+                    )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </CardFooter>
