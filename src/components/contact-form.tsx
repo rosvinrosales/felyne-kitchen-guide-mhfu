@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const contactSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -62,18 +63,22 @@ export const ContactForm: React.FC = () => {
   };
 
   return (
-    <div className="mt-6 border-t pt-4">
-      <h2 className="text-lg font-semibold mb-2">Contact me</h2>
-      <p className="text-sm text-muted-foreground mb-4">
-        Have feedback or suggestions? Send me a message.
-      </p>
+    <div className="p-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Contact me</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-4">
+            Have feedback or suggestions? Send me a message.
+          </p>
 
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4"
-          noValidate
-        >
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-4"
+              noValidate
+            >
           <FormField
             control={form.control}
             name="email"
@@ -132,6 +137,8 @@ export const ContactForm: React.FC = () => {
           </div>
         </form>
       </Form>
+        </CardContent>
+      </Card>
     </div>
   );
 };

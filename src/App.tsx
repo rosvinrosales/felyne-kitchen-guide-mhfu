@@ -59,7 +59,7 @@ const App = () => {
               Felyne Kitchen Guide (MHFU)
               <ModeToggle />
             </CardTitle>
-            <CardDescription>-</CardDescription>
+            <CardDescription>Select the number of Felyne and the food choices to see the combinations and results. Click the reset button to clear the current selections.</CardDescription>
           </CardHeader>
           <CardContent className="gap-5 flex flex-col">
             <FelyneSelect onSelectFelyne={onSelectFelyne} />
@@ -82,8 +82,8 @@ const App = () => {
               Reset
             </Button>
           </CardContent>
-          <ContactForm />
           <Footer />
+          <ContactForm />
         </Card>
       </div>
     </>
